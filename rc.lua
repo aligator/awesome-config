@@ -560,6 +560,8 @@ awful.rules.rules = {
 	--	}, properties = { screen = 1 }
 	--},
         
+    
+
     -- Add titlebars to normal clients and dialogs
     { 
 		rule_any = {
@@ -567,28 +569,14 @@ awful.rules.rules = {
 				--"normal",
 				"dialog" }
       	}, properties = { titlebars_enabled = true}
-    }, 
-        {
-            rule = { -- fixes IntelliJ
-                class = "sun-awt-X11-XFramePeer", 
-                class = "jetbrains-.*",
-                name = "win.*"
-            }, properties = { titlebars_enabled = false, floating = true, placement = awful.placement.restore }
-        },
-        {
-            rule = { -- fixes IntelliJ
-                class = "sun-awt-X11-XDialogPeer",
-                class = "jetbrains-.*",
-            }, properties = { titlebars_enabled = false, floating = true, focusable = false, focus = true, placement = awful.placement.restore, buttons = {} }
-        },
-        {
-            rule = {
-                class = "steam.exe",
-                class = "Wine",
-                type = "dialog"
-            }, properties = { titlebars_enabled = false, floating = true, placement = awful.placement.restore }   
-            
-        }
+    },
+    {
+        rule = {
+            class = "steam.exe",
+            class = "Wine",
+            type = "dialog"
+        }, properties = { titlebars_enabled = false, floating = true, placement = awful.placement.restore }           
+   }
     -- Set Firefox to always map on the tag named "2" on screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { screen = 1, tag = "2" } },
@@ -690,6 +678,7 @@ local cmds =
     { "pasystray", "", },
 --    { "gpg", "--refresh-keys", },
   --  { "mpd", "", },
+    { "/home/arch2/bin/nextcloud.sh", "", }
     --and so on...
 }
 
