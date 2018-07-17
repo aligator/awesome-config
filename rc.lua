@@ -19,7 +19,7 @@ local mqtt_data = require("mqtt-data")
 
 
 function formatIrc(json)
-    local obj, pos, err = require("dkjson").decode(json, 1, nil)
+    local obj, pos, err = require("dkjson").decode(string.gsub(json, "\\\\\\", "\\"), 1, nil)
     return obj.buffer .. " " .. obj.sender .. ": " .. obj.message
 end
 
@@ -265,8 +265,8 @@ awful.screen.connect_for_each_screen(function(s)
 		coins_widget,
         wibox.widget.textbox("<span font='12'>  |  </span>"),
         wibox.widget {
-            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/linux", "aw-linux", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 9", formatIrc),
-            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/freifunk-altdorf", "aw-ff", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 9", formatIrc),
+            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/linux", "aw-linux", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 11", formatIrc),
+            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/freifunk-altdorf", "aw-ff", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 11", formatIrc),
             layout = wibox.layout.fixed.vertical
         }
 	}
