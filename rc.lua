@@ -14,6 +14,14 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 local freedesktop = require("freedesktop")
 local calendar = require("calendar")
 local coins_widget = require("coins")
+local mqtt = require("mqtt")
+local mqtt_data = require("mqtt-data")
+
+
+function formatIrc(json)
+    local obj, pos, err = require("dkjson").decode(json, 1, nil)
+    return obj.buffer .. " " .. obj.sender .. ": " .. obj.message
+end
 
 -- Enable hotkeys help widget for VIM and other apps
 -- when client with a matching name is opened:
@@ -118,7 +126,7 @@ myawesomemenu = {
 }
 
 myCustomMenu = {
-    { "Icecube", "icecube" },
+    { "Icecube", "icecube2" },
     { "FPGA Programmer", "programmer" }
 }
 
@@ -254,8 +262,13 @@ awful.screen.connect_for_each_screen(function(s)
 
 	s.widgetBar:setup {
 		layout = wibox.layout.fixed.horizontal,
-		coins_widget
-
+		coins_widget,
+        wibox.widget.textbox("<span font='12'>  |  </span>"),
+        wibox.widget {
+            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/linux", "aw-linux", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 9", formatIrc),
+            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/freifunk-altdorf", "aw-ff", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 9", formatIrc),
+            layout = wibox.layout.fixed.vertical
+        }
 	}
 end)
 -- }}}
