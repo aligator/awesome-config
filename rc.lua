@@ -153,7 +153,7 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock()
+mytextclock = awful.widget.textclock(" %a %b %d, %H:%M %S", 1)
 calendar({today='<b><span color="#00ff00" background="#009900">%2i</span></b>'}):attach(mytextclock)
 
 -- Create a wibox for each screen and add it
@@ -239,7 +239,7 @@ awful.screen.connect_for_each_screen(function(s)
 
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s })
-	s.widgetBar = awful.wibar({ position = "bottom", screen = s })
+	s.widgetBar = awful.wibar({ position = "bottom", height = 35, screen = s })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -265,8 +265,8 @@ awful.screen.connect_for_each_screen(function(s)
 		coins_widget,
         wibox.widget.textbox("<span font='12'>  |  </span>"),
         wibox.widget {
-            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/linux", "aw-linux", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 11", formatIrc),
-            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/freifunk-altdorf", "aw-ff", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 11", formatIrc),
+            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/linux", "aw-linux", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 12", formatIrc),
+            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/freifunk-altdorf", "aw-ff", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 12", formatIrc),
             layout = wibox.layout.fixed.vertical
         }
 	}
