@@ -11,12 +11,10 @@ function mqtt_widget.new(screen, host, port, topic, clientId, user, password, ca
         ret.font = font
     end    
     
-    local cmd = "mosquitto_sub -c -R -C 1 --cafile "
+    local cmd = "mosquitto_sub -c -R -C 1 "
     
     if cafile then
-        cmd = cmd..cafile
-    else
-        cmd = cmd.."/etc/ssl/certs/ca-certificates.crt"
+        cmd = cmd.."--cafile "..cafile
     end
     
     cmd = cmd.." -h "..host.." -p "

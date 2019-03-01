@@ -17,9 +17,10 @@ local coins_widget = require("coins")
 local mqtt = require("mqtt")
 local mqtt_data = require("mqtt-data")
 
+local networkEnabled = true
 
 function formatIrc(json)
-    local obj, pos, err = require("dkjson").decode(string.gsub(json, "\\\\\\", "\\"), 1, nil)
+    local obj, pos, err = require("dkjson").decode(string.gsub(string.gsub(json, "\\\\\\", "\\"), "'", "'"), 1, nil)
     return obj.buffer .. " " .. obj.sender .. ": " .. obj.message
 end
 
@@ -104,6 +105,20 @@ local function client_menu_toggle_fn()
 end
 -- }}}
 
+
+local function buildWigetBar(screen)
+    screen.widgetBar:setup {
+        layout = wibox.layout.fixed.horizontal,
+        coins_widget,
+        wibox.widget.textbox("<span font='12'>  |  </span>"),
+        wibox.widget {
+            mqtt.new(screen, mqtt_data.host, mqtt_data.port, "weechat/linux", "aw-linux", mqtt_data.user, mqtt_data.pw, mqtt_data.cafile, "sans 12", formatIrc),
+            mqtt.new(screen, mqtt_data.host, mqtt_data.port, "weechat/freifunk-altdorf", "aw-ff", mqtt_data.user, mqtt_data.pw, mqtt_data.cafile, "sans 12", formatIrc),
+            layout = wibox.layout.fixed.vertical
+        }
+    }
+end
+
 -- {{{ Menu
 -- Create a launcher widget and a main menu
 
@@ -136,7 +151,24 @@ mymainmenu = freedesktop.menu.build({
     },
     after = {
         { "Johannes", myCustomMenu },
-        { "Terminal", terminal },        
+        { "Terminal", terminal },
+        { "Toggle IRC / BTC", function() 
+            networkEnabled = not networkEnabled 
+
+            if networkEnabled then
+                for s in screen do
+                    buildWigetBar(s)
+                end
+            else
+                for s in screen do
+                    s.widgetBar:setup {
+                        layout = wibox.layout.fixed.horizontal
+                    }
+                end
+                -- kill remaining mosquitto_sub's
+                awful.spawn('pkill mosquitto_sub')
+            end
+        end},
     }
 }) 
 
@@ -259,17 +291,7 @@ awful.screen.connect_for_each_screen(function(s)
             s.mylayoutbox,
         },
     }
-
-	s.widgetBar:setup {
-		layout = wibox.layout.fixed.horizontal,
-		coins_widget,
-        wibox.widget.textbox("<span font='12'>  |  </span>"),
-        wibox.widget {
-            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/linux", "aw-linux", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 12", formatIrc),
-            mqtt.new(s, mqtt_data.host, mqtt_data.port, "weechat/freifunk-altdorf", "aw-ff", mqtt_data.user, mqtt_data.pw, "/etc/ssl/certs/ca-certificates.crt", "sans 12", formatIrc),
-            layout = wibox.layout.fixed.vertical
-        }
-	}
+     buildWigetBar(s)
 end)
 -- }}}
 
@@ -314,7 +336,7 @@ globalkeys = gears.table.join(
 
     awful.key({}, "Print", function () awful.util.spawn("xfce4-screenshooter") end),
 
-
+    awful.key({modkey,            }, "q", function () awful.util.spawn("xdotool key XF86Ungrab") end),
 
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
@@ -680,6 +702,7 @@ local cmds =
     { "xcompmgr", "", },
     { "setxkbmap", "-layout de,us", true },
     { "setxkbmap", "-option 'lv3:caps_switch_latch'", true },
+    { "setxkbmap", "-option 'grab:break_actions'", true },
     --{ "cairo-compmgr", "", },
 --    { "blueman-applet", "", },
     { "nm-applet", "", },
